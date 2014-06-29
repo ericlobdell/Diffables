@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Moq">
+      <HintPath>..\Diffables\packages\Moq.4.2.1402.2112\lib\net40\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -44,6 +47,8 @@
   <ItemGroup>
     <Compile Include="AssumptionsTests.cs" />
     <Compile Include="DiffableObjectTests.cs" />
+    <Compile Include="DiffServiceTests.cs" />
+    <Compile Include="Models\DiffablePerson.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
