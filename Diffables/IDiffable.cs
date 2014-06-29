@@ -12,7 +12,7 @@ namespace Diffables
         void RollBack();
         void RollForward();
         void LoadVersion(int position);
-        void RemoveVersion(int position);
+       // void RemoveVersion(int position);
         int GetPosition();
         int GetChangeCount();
         bool HasNext();

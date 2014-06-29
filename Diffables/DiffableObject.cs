@@ -14,13 +14,13 @@ namespace Diffables
     {
         private List< Dictionary<string, object> > _deltas;
         private PropertyInfo[] _props;
-        private int _currentPosition;
+        private int _currentDelta;
 
         public DiffableObject()
         {
             _deltas = new List<Dictionary<string, object>>();
             _props = GetType().GetProperties();
-            _currentPosition = 0;
+            _currentDelta = 0;
         }
         public void RecordState()
         {
@@ -32,12 +32,10 @@ namespace Diffables
                 if (hasPreviousState)
                 {
                     // compare, then save if different
-                    var previousValue = _deltas[_currentPosition - 1][p.Name];
-                    var valuesAreDifferent = !Equals( previousValue, currentValue );
-                    if (previousValue != null && valuesAreDifferent)
-                    {
+                    var previousValue = LastValueOf(p.Name);
+
+                    if (previousValue != null && !Equals( previousValue, currentValue))
                         delta.Add( p.Name, currentValue );
-                    }
                 }
                 else
                 {
@@ -47,44 +45,66 @@ namespace Diffables
 
                 
             });
-            _deltas.Add(delta);
-            ++_currentPosition;
+
+            if (delta.Count > 0)
+            {
+                _deltas.Add( delta );
+                _currentDelta++;
+            }
+           
+        }
+
+        private object LastValueOf(string property)
+        {
+            object previousValue = null;
+            for (var i = _deltas.Count - 1; i >= 0; i--)
+            {
+                var d = _deltas[i];
+                if (d.ContainsKey(property))
+                {
+                    previousValue = d[property];
+                    break;
+                }
+            }
+            return previousValue;
         }
 
         public void RollBack()
         {
-            LoadVersion(--_currentPosition);
+            LoadVersion(_currentDelta - 1);
         }
 
         public void RollForward()
         {
-            LoadVersion(++_currentPosition);
+            LoadVersion(_currentDelta + 1);
         }
 
         public void LoadVersion(int position)
         {
-            var delta = _deltas[position];
+            var delta = _deltas[position - 1];
             _props.ToList().ForEach(p =>
             {
                 // check if the delta has a value for each property,
                 // set value if necessary
-                if (delta[p.Name] != null)
+                if (delta.ContainsKey(p.Name))
                 {
                     GetType().GetProperty(p.Name).SetValue(this, delta[p.Name]);
                 }
 
             });
-            _currentPosition = position;
+            _currentDelta = position;
         }
 
-        public void RemoveVersion(int position)
-        {
-            _deltas.RemoveAt(position);
-        }
+        // This feels like it might cause problems,
+        // consider using if changes are being tracked with unique id
+        //public void RemoveVersion(int position)
+        //{
+        //    _deltas.RemoveAt(position);
+        //}
 
         public int GetPosition()
         {
-            return _currentPosition;
+            return _currentDelta;
         }
 
         public Dictionary<string, object> GetDelta(int position)
@@ -99,7 +119,7 @@ namespace Diffables
 
         public bool HasNext()
         {
-            return _currentPosition < _deltas.Count;
+            return _currentDelta < _deltas.Count;
         }
 
         public bool HasPrevious()
@@ -111,5 +131,5 @@ namespace Diffables
         {
             _deltas.Clear();
         }
-    }
+    } 
 }
