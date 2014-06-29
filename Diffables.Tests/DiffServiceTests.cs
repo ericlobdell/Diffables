@@ -68,6 +68,68 @@ namespace Diffables.Tests
             mock2.Verify();
         }
 
+        [Fact]
+        public void RollBackCallsRollBackOnAllItems ()
+        {
+            var mock1 = new Mock<IDiffable>();
+            mock1.Setup( m => m.RollBack() ).Verifiable();
 
+            var mock2 = new Mock<IDiffable>();
+            mock2.Setup( m => m.RollBack() ).Verifiable();
+
+            svc.Register( mock1.Object );
+            svc.Register( mock2.Object );
+            svc.RollBack();
+            mock1.Verify();
+            mock2.Verify();
+        }
+
+        [Fact]
+        public void RollForwardCallsRollForwardOnAllItems ()
+        {
+            var mock1 = new Mock<IDiffable>();
+            mock1.Setup( m => m.RollForward() ).Verifiable();
+
+            var mock2 = new Mock<IDiffable>();
+            mock2.Setup( m => m.RollForward() ).Verifiable();
+
+            svc.Register( mock1.Object );
+            svc.Register( mock2.Object );
+            svc.RollForward();
+            mock1.Verify();
+            mock2.Verify();
+        }
+
+        [Fact]
+        public void LoadVersionCallsLoadVersionOnAllItems ()
+        {
+            var mock1 = new Mock<IDiffable>();
+            mock1.Setup( m => m.LoadVersion(2) ).Verifiable();
+
+            var mock2 = new Mock<IDiffable>();
+            mock2.Setup( m => m.LoadVersion(2) ).Verifiable();
+
+            svc.Register( mock1.Object );
+            svc.Register( mock2.Object );
+            svc.LoadVersion(2);
+            mock1.Verify();
+            mock2.Verify();
+        }
+
+        [Fact]
+        public void FlushCallsFlushOnAllItems ()
+        {
+            var mock1 = new Mock<IDiffable>();
+            mock1.Setup( m => m.Flush() ).Verifiable();
+
+            var mock2 = new Mock<IDiffable>();
+            mock2.Setup( m => m.Flush() ).Verifiable();
+
+            svc.Register( mock1.Object );
+            svc.Register( mock2.Object );
+            svc.Flush();
+            mock1.Verify();
+            mock2.Verify();
+        }
     }
 }

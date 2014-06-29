@@ -33,6 +33,27 @@ namespace Diffables
             _diffables.ForEach( d => d.RecordState() );
         }
 
+        public void RollBack ()
+        {
+            _diffables.ForEach( d => d.RollBack() );
+        }
+
+        public void RollForward ()
+        {
+            _diffables.ForEach( d => d.RollForward() );
+        }
+
+        public void Flush ()
+        {
+            _diffables.ForEach( d => d.Flush() );
+        }
+
+        public void LoadVersion(int version)
+        {
+            _diffables.ForEach( d => d.LoadVersion(version) );
+        }
+
+
         public int ItemsCount()
         {
             return _diffables.Count;

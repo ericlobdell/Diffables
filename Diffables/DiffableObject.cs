@@ -16,25 +16,25 @@ namespace Diffables
         private PropertyInfo[] _props;
         private int _currentDelta;
 
-        public DiffableObject()
+        public DiffableObject ()
         {
             _deltas = new List<Dictionary<string, object>>();
             _props = GetType().GetProperties();
             _currentDelta = 0;
         }
-        public void RecordState()
+        public void RecordState ()
         {
             var delta = new Dictionary<string, object>();
             var hasPreviousState = HasPrevious();
-            _props.ToList().ForEach(p =>
+            _props.ToList().ForEach( p =>
             {
                 var currentValue = GetType().GetProperty( p.Name ).GetValue( this, null );
-                if (hasPreviousState)
+                if ( hasPreviousState )
                 {
                     // compare, then save if different
-                    var previousValue = LastValueOf(p.Name);
+                    var previousValue = LastValueOf( p.Name );
 
-                    if (previousValue != null && !Equals( previousValue, currentValue))
+                    if ( previousValue != null && !Equals( previousValue, currentValue ) )
                         delta.Add( p.Name, currentValue );
                 }
                 else
@@ -43,55 +43,57 @@ namespace Diffables
                     delta.Add( p.Name, currentValue );
                 }
 
-                
-            });
 
-            if (delta.Count > 0)
+            } );
+
+            if ( delta.Count > 0 )
             {
                 _deltas.Add( delta );
                 _currentDelta++;
             }
-           
+
         }
 
-        private object LastValueOf(string property)
+        private object LastValueOf ( string property )
         {
             object previousValue = null;
-            for (var i = _deltas.Count - 1; i >= 0; i--)
+            for ( var i = _deltas.Count - 1; i >= 0; i-- )
             {
-                var d = _deltas[i];
-                if (d.ContainsKey(property))
+                var d = _deltas [ i ];
+                if ( d.ContainsKey( property ) )
                 {
-                    previousValue = d[property];
+                    previousValue = d [ property ];
                     break;
                 }
             }
             return previousValue;
         }
 
-        public void RollBack()
+        public void RollBack ()
         {
-            LoadVersion(_currentDelta - 1);
+            if ( HasPrevious() )
+                LoadVersion( _currentDelta - 1 );
         }
 
-        public void RollForward()
+        public void RollForward ()
         {
-            LoadVersion(_currentDelta + 1);
+            if ( HasNext() )
+                LoadVersion( _currentDelta + 1 );
         }
 
-        public void LoadVersion(int position)
+        public void LoadVersion ( int position )
         {
-            var delta = _deltas[position - 1];
-            _props.ToList().ForEach(p =>
+            var delta = _deltas [ position - 1 ];
+            _props.ToList().ForEach( p =>
             {
                 // check if the delta has a value for each property,
                 // set value if necessary
-                if (delta.ContainsKey(p.Name))
+                if ( delta.ContainsKey( p.Name ) )
                 {
-                    GetType().GetProperty(p.Name).SetValue(this, delta[p.Name]);
+                    GetType().GetProperty( p.Name ).SetValue( this, delta [ p.Name ] );
                 }
 
-            });
+            } );
             _currentDelta = position;
         }
 
@@ -102,34 +104,34 @@ namespace Diffables
         //    _deltas.RemoveAt(position);
         //}
 
-        public int GetPosition()
+        public int GetPosition ()
         {
             return _currentDelta;
         }
 
-        public Dictionary<string, object> GetDelta(int position)
+        public Dictionary<string, object> GetDelta ( int position )
         {
-            return _deltas[position - 1];
+            return _deltas [ position - 1 ];
         }
 
-        public int GetChangeCount()
+        public int GetChangeCount ()
         {
             return _deltas.Count;
         }
 
-        public bool HasNext()
+        public bool HasNext ()
         {
             return _currentDelta < _deltas.Count;
         }
 
-        public bool HasPrevious()
+        public bool HasPrevious ()
         {
             return _deltas.Count > 0;
         }
 
-        public void Flush()
+        public void Flush ()
         {
             _deltas.Clear();
         }
-    } 
+    }
 }
