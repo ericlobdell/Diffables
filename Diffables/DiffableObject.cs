@@ -38,14 +38,12 @@ namespace Diffables
                     // save values without comparing
                     delta.Add( p.Name, currentValue );
                 }
-
-
             } );
 
             if ( delta.Count > 0 )
             {
                 _deltas.Add( delta );
-                _currentDelta++;
+                _currentDelta++; 
             }
 
         }
@@ -86,7 +84,8 @@ namespace Diffables
                 // set value if necessary
                 if ( delta.ContainsKey( p.Name ) )
                 {
-                    GetType().GetProperty( p.Name ).SetValue( this, delta [ p.Name ] );
+                    GetType().GetProperty( p.Name )
+                        .SetValue( this, delta [ p.Name ] );
                 }
 
             } );
